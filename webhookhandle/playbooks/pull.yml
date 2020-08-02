@@ -1,0 +1,43 @@
+---
+- name: Make environment ready for deployment by pulling from github
+  hosts: localhost
+  vars:
+          local_dest: "~/express/out/dev"
+  tasks:
+          - name: add github ssh key
+            copy: >
+                    src=/home/ubuntu/express/webhookhandle/playbooks/id_rsa.github
+                    dest=/home/ubuntu/.ssh/id_rsa.github
+                    owner=ubuntu
+                    group=ubuntu
+                    mode=0600
+
+          - name: configure ssh to use ansible key for github.com
+            template: >
+                    src=templates/ssh_config.j2
+                    dest=/home/ubuntu/.ssh/config
+                    owner=ubuntu
+                    group=ubuntu
+                    mode=0644
+
+          - name: pull from github
+            git:
+                    repo: ssh://git@github.com/KamiAithein/catwebsite.git
+                    key_file: /home/ubuntu/.ssh/id_rsa.github
+                    dest: "/home/ubuntu/out/{{branch}}"
+                    version: "{{branch}}"
+         
+
+          - name: install forever for node.js server on port 80
+            npm:
+                    name: forever
+                    global: yes
+                    state: present
+
+          - name: kill current server website on port 80
+            shell: forever stopall
+            when: branch=master
+
+          - name: start server on port 80
+            shell: "sudo forever start /home/ubuntu/out/master/server.js"            
+            when: branch=master
