@@ -1,6 +1,10 @@
 # ansible_githubwebhook_deployment
 Uses ansible and github webhook to automatically pull from github when there is a push. Useful for remote servers.
 
+requires ansible-playbook, express, and node
+
+must be run with sudo permissions
+
 server.js in webhookhandle listens to port 8000: If a post request is made then it looks for the ref field and figures out what branch was pushed to based on that. This is currently not secure (I didn't bother to learn how webhook secrets work or any authentication for this small project. I recommend you do)
 
 
