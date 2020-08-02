@@ -36,8 +36,8 @@
 
           - name: kill current server website on port 80
             shell: forever stopall
-            when: branch=master
+            when: branch=="master"
 
           - name: start server on port 80
             shell: "sudo forever start /home/ubuntu/out/master/server.js"            
-            when: branch=master
+            when: branch=="master"
